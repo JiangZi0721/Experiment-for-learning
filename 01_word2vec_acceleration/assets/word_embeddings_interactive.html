@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Word2Vec 词向量 2D 交互式可视化</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 24px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #F8FAFC;
+            color: #0F172A;
+        }
+        .header {
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        .header h1 {
+            margin: 0 0 6px 0;
+            font-size: 24px;
+        }
+        .header p {
+            margin: 0;
+            color: #64748B;
+            font-size: 14px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .chart-box {
+            flex: 1;
+            background: #FFFFFF;
+            border: 1px solid #CBD5E1;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            padding: 16px;
+            position: relative;
+        }
+        svg {
+            width: 100%;
+            height: 650px;
+            background: #FAFAFA;
+            border-radius: 8px;
+        }
+        .dot {
+            cursor: pointer;
+            transition: r 0.2s, stroke-width 0.2s;
+        }
+        .dot:hover {
+            r: 8px;
+            stroke: #0F172A;
+            stroke-width: 2px;
+        }
+        .word-tag {
+            font-size: 12px;
+            fill: #334155;
+            user-select: none;
+            pointer-events: none;
+            font-weight: 500;
+        }
+        .tooltip {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            pointer-events: none;
+            display: none;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+            z-index: 100;
+        }
+        .sidebar {
+            width: 280px;
+            background: #FFFFFF;
+            border: 1px solid #CBD5E1;
+            border-radius: 12px;
+            padding: 20px;
+            height: fit-content;
+        }
+        .sidebar h3 {
+            margin-top: 0;
+            font-size: 16px;
+            border-bottom: 2px solid #E2E8F0;
+            padding-bottom: 8px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+        .legend-badge {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Word2Vec 词向量空间 2D 交互流形 (PCA 降维)</h1>
+        <p>鼠标悬停在点上可高亮词汇及精确坐标，直观感受语义聚类分布规律</p>
+    </div>
+    <div class="container">
+        <div class="chart-box">
+            <div id="tooltip" class="tooltip"></div>
+            <svg id="chart" viewBox="0 0 1000 650"></svg>
+        </div>
+        <div class="sidebar">
+            <h3>语义分类图例</h3>
+            <div class="legend-item"><span class="legend-badge" style="background:#2563EB;"></span>金融与商业 (Financial)</div>
+            <div class="legend-item"><span class="legend-badge" style="background:#D97706;"></span>机构与实体 (Entities)</div>
+            <div class="legend-item"><span class="legend-badge" style="background:#059669;"></span>人物与职位 (Roles)</div>
+            <div class="legend-item"><span class="legend-badge" style="background:#7C3AED;"></span>时间与周期 (Temporal)</div>
+            <div class="legend-item"><span class="legend-badge" style="background:#DC2626;"></span>动作与变化 (Dynamics)</div>
+            <hr style="border:none;border-top:1px solid #E2E8F0;margin:20px 0;">
+            <p style="font-size:12px;color:#64748B;line-height:1.6;">
+                <b>交互提示:</b><br>
+                每个点的欧几里得距离反映了神经网络所学到的词义相似度。同类词汇在空间中自然聚集，体现了经典的“分布式表征假说”。
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const data = [{"word": "bank", "cat": "金融与商业 (Financial)", "x": 841.5, "y": 381.1, "raw_x": 0.5282, "raw_y": 0.0543, "color": "#2563EB"}, {"word": "market", "cat": "金融与商业 (Financial)", "x": 843.4, "y": 403.9, "raw_x": 0.5312, "raw_y": 0.015, "color": "#2563EB"}, {"word": "stock", "cat": "金融与商业 (Financial)", "x": 796.8, "y": 427.6, "raw_x": 0.4578, "raw_y": -0.0258, "color": "#2563EB"}, {"word": "dollar", "cat": "金融与商业 (Financial)", "x": 847.4, "y": 422.3, "raw_x": 0.5376, "raw_y": -0.0167, "color": "#2563EB"}, {"word": "fund", "cat": "金融与商业 (Financial)", "x": 863.6, "y": 394.0, "raw_x": 0.5632, "raw_y": 0.032, "color": "#2563EB"}, {"word": "price", "cat": "金融与商业 (Financial)", "x": 839.2, "y": 369.3, "raw_x": 0.5245, "raw_y": 0.0746, "color": "#2563EB"}, {"word": "trade", "cat": "金融与商业 (Financial)", "x": 809.9, "y": 328.7, "raw_x": 0.4785, "raw_y": 0.1444, "color": "#2563EB"}, {"word": "money", "cat": "金融与商业 (Financial)", "x": 862.0, "y": 420.0, "raw_x": 0.5606, "raw_y": -0.0128, "color": "#2563EB"}, {"word": "bond", "cat": "金融与商业 (Financial)", "x": 867.7, "y": 390.9, "raw_x": 0.5696, "raw_y": 0.0373, "color": "#2563EB"}, {"word": "debt", "cat": "金融与商业 (Financial)", "x": 858.9, "y": 444.6, "raw_x": 0.5557, "raw_y": -0.0551, "color": "#2563EB"}, {"word": "government", "cat": "机构与实体 (Entities)", "x": 372.5, "y": 376.5, "raw_x": -0.2115, "raw_y": 0.0622, "color": "#D97706"}, {"word": "company", "cat": "机构与实体 (Entities)", "x": 839.6, "y": 412.3, "raw_x": 0.5252, "raw_y": 0.0006, "color": "#D97706"}, {"word": "state", "cat": "机构与实体 (Entities)", "x": 353.4, "y": 526.4, "raw_x": -0.2416, "raw_y": -0.1957, "color": "#D97706"}, {"word": "court", "cat": "机构与实体 (Entities)", "x": 305.5, "y": 481.5, "raw_x": -0.3172, "raw_y": -0.1185, "color": "#D97706"}, {"word": "firm", "cat": "机构与实体 (Entities)", "x": 807.5, "y": 443.4, "raw_x": 0.4746, "raw_y": -0.0531, "color": "#D97706"}, {"word": "president", "cat": "人物与职位 (Roles)", "x": 312.3, "y": 544.7, "raw_x": -0.3065, "raw_y": -0.2272, "color": "#059669"}, {"word": "manager", "cat": "人物与职位 (Roles)", "x": 487.6, "y": 501.9, "raw_x": -0.0299, "raw_y": -0.1536, "color": "#059669"}, {"word": "lawyer", "cat": "人物与职位 (Roles)", "x": 303.0, "y": 472.9, "raw_x": -0.3212, "raw_y": -0.1037, "color": "#059669"}, {"word": "man", "cat": "人物与职位 (Roles)", "x": 401.7, "y": 435.3, "raw_x": -0.1654, "raw_y": -0.0389, "color": "#059669"}, {"word": "woman", "cat": "人物与职位 (Roles)", "x": 384.7, "y": 403.9, "raw_x": -0.1923, "raw_y": 0.0152, "color": "#059669"}, {"word": "year", "cat": "时间与周期 (Temporal)", "x": 196.4, "y": 447.8, "raw_x": -0.4893, "raw_y": -0.0605, "color": "#7C3AED"}, {"word": "yesterday", "cat": "时间与周期 (Temporal)", "x": 251.2, "y": 560.1, "raw_x": -0.4028, "raw_y": -0.2536, "color": "#7C3AED"}, {"word": "recent", "cat": "时间与周期 (Temporal)", "x": 343.8, "y": 418.5, "raw_x": -0.2568, "raw_y": -0.0101, "color": "#7C3AED"}, {"word": "time", "cat": "时间与周期 (Temporal)", "x": 242.4, "y": 537.4, "raw_x": -0.4168, "raw_y": -0.2146, "color": "#7C3AED"}, {"word": "annual", "cat": "时间与周期 (Temporal)", "x": 236.4, "y": 548.8, "raw_x": -0.4262, "raw_y": -0.2343, "color": "#7C3AED"}, {"word": "period", "cat": "时间与周期 (Temporal)", "x": 208.5, "y": 532.7, "raw_x": -0.4703, "raw_y": -0.2065, "color": "#7C3AED"}, {"word": "rose", "cat": "动作与变化 (Dynamics)", "x": 298.1, "y": 127.3, "raw_x": -0.3289, "raw_y": 0.4908, "color": "#DC2626"}, {"word": "fell", "cat": "动作与变化 (Dynamics)", "x": 254.6, "y": 154.2, "raw_x": -0.3975, "raw_y": 0.4445, "color": "#DC2626"}, {"word": "grew", "cat": "动作与变化 (Dynamics)", "x": 313.2, "y": 160.0, "raw_x": -0.3051, "raw_y": 0.4346, "color": "#DC2626"}, {"word": "said", "cat": "动作与变化 (Dynamics)", "x": 291.5, "y": 147.2, "raw_x": -0.3393, "raw_y": 0.4566, "color": "#DC2626"}, {"word": "take", "cat": "动作与变化 (Dynamics)", "x": 313.3, "y": 234.3, "raw_x": -0.3048, "raw_y": 0.307, "color": "#DC2626"}, {"word": "took", "cat": "动作与变化 (Dynamics)", "x": 269.4, "y": 113.8, "raw_x": -0.3741, "raw_y": 0.514, "color": "#DC2626"}];
+        const svg = document.getElementById('chart');
+        const tooltip = document.getElementById('tooltip');
+
+        data.forEach(d => {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', d.x);
+            circle.setAttribute('cy', d.y);
+            circle.setAttribute('r', '5');
+            circle.setAttribute('fill', d.color);
+            circle.setAttribute('class', 'dot');
+
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', d.x + 8);
+            text.setAttribute('y', d.y + 4);
+            text.setAttribute('class', 'word-tag');
+            text.textContent = d.word;
+
+            circle.addEventListener('mousemove', (e) => {
+                tooltip.style.display = 'block';
+                tooltip.style.left = (e.pageX + 15) + 'px';
+                tooltip.style.top = (e.pageY - 20) + 'px';
+                tooltip.innerHTML = `<b>${d.word}</b><br>类别: ${d.cat}<br>坐标: [${d.raw_x}, ${d.raw_y}]`;
+            });
+
+            circle.addEventListener('mouseleave', () => {
+                tooltip.style.display = 'none';
+            });
+
+            svg.appendChild(circle);
+            svg.appendChild(text);
+        });
+    </script>
+</body>
+</html>
