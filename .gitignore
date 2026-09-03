@@ -28,12 +28,14 @@ env/
 ENV/
 .env
 
-# Model weights & large data
+# Model weights & generated data
 *.pkl
 *.bin
+*.safetensors
 *.tar.gz
 *.zip
-data/
+02_whitebox_rag_system/models/
+02_whitebox_rag_system/data/cache/
 *.log
 
 # IDE & OS

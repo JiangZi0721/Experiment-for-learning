@@ -1,0 +1,82 @@
+[
+  {
+    "category": "Exact-Match",
+    "category_name": "精确符号与专有名词",
+    "dimension_id": "D1",
+    "query": "ZeRO-3 是如何通过将模型参数、梯度和优化器状态完全分区来优化显存占用的？",
+    "intent": "考察 BM25 是否能够精确捕获高专有缩写 'ZeRO-3'，检验 Dense 向量是否会语义漂移至普通的分布式数据并行。",
+    "expected_behavior": "BM25 应直接命中 ZeRO-3 状态分区切片并赋予高分；Dense 分数可能平缓；RRF 应确保该切片位列 Top-1。"
+  },
+  {
+    "category": "Exact-Match",
+    "category_name": "底层系统调用与参数",
+    "dimension_id": "D1",
+    "query": "io_uring 相比于传统 epoll 的核心优势是什么？内核是如何利用 SQE 和 CQE 双环缓冲区消除系统调用的？",
+    "intent": "考察针对极高辨识度的内核数据结构 'io_uring'、'SQE'、'CQE' 的稀疏命中能力。",
+    "expected_behavior": "BM25 凭借关键词频度压倒性排在最前。"
+  },
+  {
+    "category": "Zero-Keyword",
+    "category_name": "纯语义表述 (零专有词)",
+    "dimension_id": "D2",
+    "query": "在数据库系统中，为了防止系统突发掉电导致缓存数据丢失，通常采用先写一份顺序追加日志再写内存缓冲池的机制是什么？",
+    "intent": "故意不出现专有名词 'WAL' 或 'Write-Ahead Logging'，仅使用底层机制描述。测试 Dense 跨越词汇鸿沟的能力。",
+    "expected_behavior": "BM25 因无精确词匹配而失灵或排位极低；Dense 语义相似度应准确锁定 WAL 机制切片。"
+  },
+  {
+    "category": "Zero-Keyword",
+    "category_name": "纯语义表述 (零专有词)",
+    "dimension_id": "D2",
+    "query": "当多个节点就某个决策达成一致时，通过多数派节点投票且轮流选举领导者来保证强一致性的算法有哪些？",
+    "intent": "不出现 'Raft' 或 'Paxos' 名字，仅描述多数派共识与领导者选举原理。",
+    "expected_behavior": "Dense 检索应将 Raft 核心原理切片排在前面，体现纯语义抽象召回能力。"
+  },
+  {
+    "category": "Cross-Domain-Ambiguity",
+    "category_name": "跨领域多义词混淆",
+    "dimension_id": "D3",
+    "query": "WAL 在数据写入与持久化过程中，是如何配合检查点 (Checkpoint) 清理过期日志并释放磁盘空间的？",
+    "intent": "语料库中同时存在关系型数据库的 WAL 与分布式系统的日志复制。考察 Cross-Encoder 能否识别数据库语境，过滤分布式共识的无关切片。",
+    "expected_behavior": "两路召回初排会混入 Raft 日志切片与 DB WAL 切片，Cross-Encoder 交叉重排应将数据库存储引擎的 WAL 提到前列，大幅削减分布式切片分数。"
+  },
+  {
+    "category": "Cross-Domain-Ambiguity",
+    "category_name": "跨领域多义词混淆",
+    "dimension_id": "D3",
+    "query": "KV 缓存 (KV Cache) 是如何解决生成式任务重复计算注意力键值的问题？它与操作系统的硬件 CPU Cache 机制有何本质不同？",
+    "intent": "包含 'Cache'、'KV'，容易在操作系统内核缓存、数据库缓冲池与 LLM 显存之间产生混淆。",
+    "expected_behavior": "检验多路融合是否兼顾两者，并在重排序时准确识别对比意图。"
+  },
+  {
+    "category": "Deep-Tradeoff",
+    "category_name": "架构权衡与多跳对比",
+    "dimension_id": "D4",
+    "query": "对比 LSM-Tree 与 B+ Tree 在写密集型场景与点查场景下的读写放大、空间放大表现，各自的工程取舍是什么？",
+    "intent": "单一文档难以完全涵盖双方全部指标，需要系统从 LSM-Tree 切片与 B+ Tree 切片中多路召回互补信息。",
+    "expected_behavior": "RRF 必须能同时把 LSM-Tree 的写优化切片与 B+ Tree 的点查优化切片捞入候选集，DeepSeek 输出完整对比分析。"
+  },
+  {
+    "category": "Deep-Tradeoff",
+    "category_name": "架构权衡与多跳对比",
+    "dimension_id": "D4",
+    "query": "对比 Grouped-Query Attention (GQA) 与 Multi-Head Attention (MHA) 在显存带宽瓶颈和模型表征能力之间的权衡取舍。",
+    "intent": "考察对大模型注意力演进中 KV Cache 显存节省与模型精度权衡的深层理解。",
+    "expected_behavior": "召回切片需涵盖 GQA 共享 Key-Value 头的工程动机及其对吞吐量的影响。"
+  },
+  {
+    "category": "Hallucination-Resistance",
+    "category_name": "对抗诱导与拒答验证",
+    "dimension_id": "D5",
+    "query": "在 Kubernetes 调度器中，最新引入的量子退火优化算子 (QuantumAnnealingScheduler) 是如何计算节点亲和性权重的？",
+    "intent": "构造一个技术上虚构的概念，测试系统在 Context Recall 为 0 或切片极不相关时的拒答抗幻觉能力。",
+    "expected_behavior": "所有召回切片相似度极低或内容无关；DeepSeek 应明确声明资料中未提及该技术并拒绝虚构回答。"
+  },
+  {
+    "category": "Hallucination-Resistance",
+    "category_name": "对抗诱导与拒答验证",
+    "dimension_id": "D5",
+    "query": "Linux 内核在 6.8 版本中使用的基于区块链的 inode 分布式共识机制是怎样工作的？",
+    "intent": "完全捏造的荒谬技术组合。考察系统是否会强行把 Linux inode 切片和区块链缝合回答。",
+    "expected_behavior": "模型应识别出检索材料未提及此机制，指出事实不符或知识库缺失该记录，展现高 Faithfulness。"
+  }
+]
