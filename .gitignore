@@ -32,6 +32,7 @@ ENV/
 *.pkl
 *.bin
 *.safetensors
+*.pt
 *.tar.gz
 *.zip
 02_whitebox_rag_system/models/

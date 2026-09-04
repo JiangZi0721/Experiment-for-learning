@@ -9,6 +9,7 @@
 | 01 | [`01_word2vec_acceleration/`](./01_word2vec_acceleration) | Word2Vec、负采样、向量化实现与可视化 | 已完成 |
 | 02 | [`02_whitebox_rag_system/`](./02_whitebox_rag_system) | 白盒 RAG：切片、BM25、Dense、RRF、重排、生成与评估 | 已完成 |
 | 03 | [`03_RNN-LM/`](./03_RNN-LM) | 白盒 RNN、GRU、BPTT、RNNLM 与梯度检验 | 已完成 |
+| 04 | [`04_PPO-GRPO-DPO/`](./04_PPO-GRPO-DPO) | 白盒 PPO、DPO、GRPO 与大模型对齐实验 | 已完成 |
 
 ## 通用规范
 
