@@ -8,7 +8,7 @@
 | --- | --- | --- | --- |
 | 01 | [`01_word2vec_acceleration/`](./01_word2vec_acceleration) | Word2Vec、负采样、向量化实现与可视化 | 已完成 |
 | 02 | [`02_whitebox_rag_system/`](./02_whitebox_rag_system) | 白盒 RAG：切片、BM25、Dense、RRF、重排、生成与评估 | 已完成 |
-| 03 | `03_transformer_from_scratch/` | Transformer 底层实现与训练实验 | 规划中 |
+| 03 | [`03_RNN-LM/`](./03_RNN-LM) | 白盒 RNN、GRU、BPTT、RNNLM 与梯度检验 | 已完成 |
 
 ## 通用规范
 
