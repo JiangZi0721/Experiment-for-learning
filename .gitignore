@@ -44,3 +44,12 @@ ENV/
 .idea/
 .DS_Store
 Thumbs.db
+.cache/
+.matplotlib_cache/
+checkpoints/
+
+# Media & Large artifacts
+*.mp4
+*.wav
+*.avi
+*.mov
