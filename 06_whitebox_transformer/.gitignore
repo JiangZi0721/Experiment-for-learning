@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.vercel/
+.superpowers/
+1788530698355.mp4
+audio_16k.wav
+transcript.md

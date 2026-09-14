@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhiteBox Transformer: 架构全景白盒透视学习系统</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- KaTeX 数学公式支持 (配备本地高保真双重回退) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous" onload="window.renderMathFormulas && window.renderMathFormulas()"></script>
+</head>
+<body>
+
+  <!-- 顶部导航与品牌栏 -->
+  <header>
+    <div class="brand-container">
+      <div class="brand-logo">⚡</div>
+      <div>
+        <div class="brand-title">WhiteBox Transformer</div>
+        <div class="brand-subtitle">Transformer 架构微观张量白盒透视交互学习系统</div>
+      </div>
+    </div>
+
+    <!-- 主功能模块切换 -->
+    <nav class="main-nav">
+      <button class="nav-tab active" data-tab="seq2seq">
+        <span>🌟</span> 端到端自回归演播
+      </button>
+      <button class="nav-tab" data-tab="encoder">
+        <span>🏛️</span> 编码器透视 (Encoder)
+      </button>
+      <button class="nav-tab" data-tab="decoder">
+        <span>🎭</span> 解码器透视 (Decoder)
+      </button>
+      <button class="nav-tab" data-tab="theory">
+        <span>📐</span> 核心理论与证明
+      </button>
+    </nav>
+
+    <!-- 顶部状态工具 -->
+    <div style="display:flex; align-items:center; gap:0.8rem;">
+      <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; color:var(--text-secondary); cursor:pointer;">
+        <input type="checkbox" id="toggle-auto-expand" style="cursor:pointer; accent-color:var(--accent-indigo);">
+        <span>默认展开所有张量细节</span>
+      </label>
+    </div>
+  </header>
+
+  <!-- 主体工作区 -->
+  <div class="app-layout">
+    <!-- 左侧步骤导览轴 -->
+    <aside class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">
+          <span id="sidebar-category-title">🧭 章节导航</span>
+          <span style="font-size:0.75rem; color:var(--text-muted);">Step-by-Step</span>
+        </div>
+        <ul class="step-list" id="step-nav-list">
+          <!-- 由 app.js 动态填充 -->
+        </ul>
+      </div>
+
+      <!-- 参数面板 -->
+      <div class="sidebar-card" style="font-size:0.8rem; color:var(--text-muted);">
+        <div style="font-weight:600; color:var(--text-secondary); margin-bottom:0.5rem;">⚙️ 当前玩具微型参数</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.4rem; font-family:var(--font-mono);">
+          <div>D_model = 4</div>
+          <div>Heads = 2</div>
+          <div>d_k = 2</div>
+          <div>D_ffn = 8</div>
+          <div>Src_N = 4</div>
+          <div>Vocab = 8</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 右侧动态透视视图 -->
+    <main class="main-view" id="main-content-view">
+      <!-- 由 app.js 动态渲染当前步骤的原理、公式、探针开关与数值张量面板 -->
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

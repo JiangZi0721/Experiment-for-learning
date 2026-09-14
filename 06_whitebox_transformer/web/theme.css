@@ -1,0 +1,140 @@
+:root {
+  color-scheme: light;
+  --bg-primary: #f5f6f8;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e9edf2;
+  --bg-card: #ffffff;
+  --border-color: #cbd2dc;
+  --text-primary: #202833;
+  --text-secondary: #445165;
+  --text-muted: #586577;
+  --accent-blue: #245bbb;
+  --accent-indigo: #4459b5;
+  --accent-cyan: #086477;
+  --theme-info: #eff5fc;
+  --theme-concept: #eaf5f3;
+  --theme-warning: #fff5df;
+  --theme-link: #245bbb;
+  --theme-green: #087348;
+  --theme-amber: #845000;
+  --theme-rose: #ae2547;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-primary: #191c21;
+  --bg-secondary: #24282f;
+  --bg-tertiary: #333942;
+  --bg-card: #24282f;
+  --border-color: #525b68;
+  --text-primary: #f0f2f5;
+  --text-secondary: #ced4dd;
+  --text-muted: #adb7c5;
+  --accent-blue: #8eb8ff;
+  --accent-indigo: #a7b3ff;
+  --accent-cyan: #79d5df;
+  --theme-info: #293442;
+  --theme-concept: #243e39;
+  --theme-warning: #423822;
+  --theme-link: #a3c6ff;
+  --theme-green: #84dfb3;
+  --theme-amber: #f1ce83;
+  --theme-rose: #ffabc0;
+}
+html body, html body.course-mode {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+html body > header {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.main-nav { flex-wrap: wrap; }
+.theme-control {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  white-space: nowrap;
+  font-size: .85rem;
+  color: var(--text-secondary);
+}
+.theme-control select {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: .4rem;
+  font: inherit;
+}
+:is(button, select, summary, a):focus-visible {
+  outline: 3px solid var(--theme-link);
+  outline-offset: 3px;
+}
+html .brand-title {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  letter-spacing: 0;
+}
+html :is(.brand-title, .card-title, .probe-prompt, .math-formula-body, .prob-name),
+html .course-mode :is(.brand-title, .course-header h1, h2) {
+  color: var(--text-primary);
+}
+html :is(.brand-subtitle, .sidebar-title, .nav-tab, .step-item, .theory-box),
+html .course-mode :is(.brand-subtitle, .sidebar-title, .nav-tab, .step-item,
+  .course-header p, .lesson-prose, .lens-panel p, .source-reference, .source-reference summary) {
+  color: var(--text-secondary);
+}
+html :is(.nav-tab, .step-item) { background: transparent; }
+html :is(.nav-tab.active, .step-item.active, .card-badge, .math-formula-label,
+  .math-sup, .math-matrix-dim, .theory-box h4) {
+  color: var(--theme-link);
+}
+html .course-mode :is(.nav-tab, .step-item) {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+html :is(.sidebar-card, .section-card, .matrix-card, .generation-panel),
+html .course-mode :is(.sidebar-card, .math-panel, .lens-panel) {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  box-shadow: none;
+}
+html :is(.math-formula-container, .tensor-inspector, .theory-box, .probe-trigger) {
+  background: var(--theme-info);
+  border-color: var(--border-color);
+  box-shadow: none;
+}
+html :is(.math-sub, .math-fn) { color: var(--text-primary); }
+html .math-var { color: var(--theme-amber); }
+html table.tensor-table :is(th, td) {
+  border-color: var(--border-color);
+}
+html table.tensor-table th { color: var(--text-secondary); }
+html table.tensor-table td:not(.heat-cell) { color: var(--text-primary); }
+html table.tensor-table td.row-label {
+  background: var(--bg-tertiary);
+  color: var(--accent-cyan);
+}
+/* Inline heatmap backgrounds retain their numeric weight; only labels adapt. */
+html[data-theme="light"] table.tensor-table td.heat-cell { color: #111827 !important; }
+html[data-theme="dark"] table.tensor-table td.heat-cell { color: #ffffff !important; }
+html .token-pill.src { color: var(--theme-link); }
+html .token-pill.tgt-bos { color: var(--theme-amber); }
+html :is(.token-pill.tgt-gen, .prob-val) { color: var(--theme-green); }
+html .token-pill.tgt-eos { color: var(--theme-rose); }
+html .btn-nav.primary {
+  background: #245bbb;
+  border-color: #245bbb;
+  color: #ffffff;
+}
+html .course-mode .concept-card { background: var(--theme-concept); }
+html .course-mode :is(.concept-card h3, .concept-card p) { color: var(--text-primary); }
+html .course-mode .misconception { background: var(--theme-warning); }
+html .course-mode .misconception p { color: var(--theme-amber); }
+html .course-mode :is(.math-panel code, .source-reference a) { color: var(--theme-link); }
+.matrix-card { min-width: 0; flex-basis: 280px; overflow-x: auto; }
+@media (max-width: 600px) {
+  html body > header { padding: 1rem; position: static; }
+  .probe-trigger, .stepper-footer { flex-wrap: wrap; }
+}
