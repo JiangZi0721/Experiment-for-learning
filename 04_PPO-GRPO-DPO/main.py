@@ -271,7 +271,7 @@ class WhiteBoxRLLab:
         # Stage 4: 改进后产出观测与最终评测
         self.visualizer.show_experiment_stage(4, "改进后产出观测与对比评测", "横向对比单样本基线、G=2 死锁群组与 G=6 赛马群组的探索能力与相对优势分布")
         best_cand = max(improved_res["traces"], key=lambda x: x["raw_reward"])
-
+        
         self.visualizer.show_text_evolution_card(
             title="GRPO 赛马对齐前后生成演变微观透视",
             before_label="基座模型初始生成 (Stage 1)",
