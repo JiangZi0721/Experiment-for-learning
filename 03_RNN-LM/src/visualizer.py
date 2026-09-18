@@ -74,7 +74,7 @@ class RNNVisualizer:
         """
         展示实验核心指标通俗大白话词典看板 (Metric Glossary Panel)
         彻底解决初学者'只看数字不知其意'的痛点，逐一拆解每个指标的学术名、数学来源、生活化含义与正常基准区间。
-
+        
         参数:
             title: 看板主标题
             definitions: 列表，每项为 (学术指标名, 数学定义/公式, 初学者人话含义, 诊断与参考区间)
@@ -125,7 +125,7 @@ class RNNVisualizer:
         if show_banner:
             sub = f"透视前向加权融合、tanh 非线性激活与微观饱和度 ({scene_name})" if scene_name else "透视前向加权融合、tanh 非线性激活与微观饱和度"
             self.print_banner(f"【探针 1】单步 RNN 神经元解构 (时间步 t={step_idx})", sub)
-
+        
         if show_tip:
             self.print_tip(
                 "神经元就像一个人在边看书边做笔记：\n"
@@ -134,7 +134,7 @@ class RNNVisualizer:
                 "  数学上的导数会瞬间归零，导致反向纠错时改错信号完全无法穿透进来，这就是'梯度消失'的微观根源！",
                 tip_key="probe1_cell_anatomy"
             )
-
+        
         if not HAS_RICH:
             print(f"x_norm: {probe_data.get('x_norm', 0):.4f}, h_prev_norm: {probe_data.get('h_prev_norm', 0):.4f}")
             print(f"Memory Ratio: {probe_data.get('memory_ratio', 0):.2%}, Saturation: {probe_data.get('saturation_ratio', 0):.2%}")
@@ -188,7 +188,7 @@ class RNNVisualizer:
             f"均值: {probe_data.get('h_next_mean', 0.0):.3f}",
             "压缩至(-1,1)传给后继"
         )
-
+        
         self.console.print(table)
 
     def show_time_unrolling_forward(
@@ -202,7 +202,7 @@ class RNNVisualizer:
         """
         if show_banner:
             self.print_banner("【探针 2】TimeRNN 时序前向展开流动透视", "观察状态向量 h_t 在时间序列 T 个时钟周期的演化轨迹")
-
+        
         if show_tip:
             self.print_tip(
                 "这里展示模型连续读入 T 个字的过程中，脑海中的记忆小本子 (h_t) 是怎么一步步演变的：\n"
@@ -210,12 +210,12 @@ class RNNVisualizer:
                 "• 关注【听从历史比例】：刚开始读第 1 个字时记忆为空，随着句子拉长，模型越来越依赖前文语境。",
                 tip_key="probe2_forward_unrolling"
             )
-
+        
         step_h_norms = forward_probe.get("step_h_norms", [])
         step_sat = forward_probe.get("step_sat_ratios", [])
         step_mem = forward_probe.get("step_mem_ratios", [])
         T = len(step_h_norms)
-
+        
         if not HAS_RICH or T == 0:
             print(f"Time steps: {T}, Initial norm: {forward_probe.get('h_start_norm', 0):.4f}, Final norm: {forward_probe.get('h_end_norm', 0):.4f}")
             return
@@ -233,10 +233,10 @@ class RNNVisualizer:
             norm_bar = self._render_bar(norm_val / max_norm, 8, "cyan")
             mem_bar = self._render_bar(step_mem[t], 8, "magenta")
             sat_bar = self._render_bar(step_sat[t], 8, "red" if step_sat[t] > 0.2 else "green")
-
+            
             note = "开始破题" if t == 0 else ("句意收拢" if t == T-1 else "语境累积中")
             table.add_row(f"第 {t+1:02d} 字", f"{norm_val:6.3f} {norm_bar}", mem_bar, sat_bar, note)
-
+            
         self.console.print(table)
 
     def show_bptt_backward_flow(
@@ -252,7 +252,7 @@ class RNNVisualizer:
         if show_banner:
             sub = f"观察改错信号沿时间轴逆流回溯时，隐状态梯度 ||dh_t|| 的衰减与放大 ({scene_name})" if scene_name else "观察改错信号沿时间轴逆流回溯时，隐状态梯度 ||dh_t|| 的衰减与放大"
             self.print_banner("【探针 3】BPTT 梯度时序逆流透视 (倒放电影·秋后算账)", sub)
-
+        
         if show_tip:
             self.print_tip(
                 "秋后算账时间到！句子末尾预测出错后，模型像'倒放电影'一样从未来向过去倒查责任人：\n"
@@ -262,10 +262,10 @@ class RNNVisualizer:
                 "  - 只有稳定保持在 1.0x 附近（绿色）：误差信号才能健康穿越漫长的时间轴。",
                 tip_key="probe3_bptt_backward"
             )
-
+        
         step_dh = backward_probe.get("step_dh_norms", [])
         T = len(step_dh)
-
+        
         if not HAS_RICH or T == 0:
             print(f"Gradient norms across time: {step_dh}")
             return
@@ -281,7 +281,7 @@ class RNNVisualizer:
         for t in reversed(range(T)):
             cur_dh = step_dh[t]
             ratio = cur_dh / terminal_grad
-
+            
             # 状态诊断
             if ratio < 0.05:
                 diag = "[bold yellow][!] 严重梯度消失 (声音听不见了)[/bold yellow]"
@@ -292,7 +292,7 @@ class RNNVisualizer:
             else:
                 diag = "[green][OK] 信号平稳可达 (健康传递)[/green]"
                 color = "green"
-
+                
             ratio_str = f"{ratio:8.2e}x" if (ratio < 0.01 or ratio > 100) else f"{ratio:6.2f}x"
             table.add_row(
                 f"← 倒查第{t+1:02d}字",
@@ -300,9 +300,9 @@ class RNNVisualizer:
                 f"[{color}]{ratio_str}[/{color}]",
                 diag
             )
-
+            
         self.console.print(table)
-
+        
         # 打印总汇参数梯度
         summary_panel = Text()
         summary_panel.append(f"• 输入字嵌入梯度   ||dWx||: {backward_probe.get('total_dWx_norm', 0.0):.4f} (新词特征改错步幅)\n", style="cyan")
@@ -325,7 +325,7 @@ class RNNVisualizer:
         """
         if show_banner:
             self.print_banner(f"【探针 4】Truncated BPTT 跨段接力透视 (第 #{chunk_idx+1} 分段)", "揭秘 RNN 能够学完超长小说而不挤爆电脑内存的绝招")
-
+        
         if show_tip:
             self.print_tip(
                 "为什么十万字的小说不会把显存撑爆？\n"
@@ -335,7 +335,7 @@ class RNNVisualizer:
                 "这样电脑内存永远只需要保存 15 步的账本，花极小的显存就能读完一整座图书馆！",
                 tip_key="probe4_truncated_relay"
             )
-
+        
         if not HAS_RICH:
             print(f"Chunk {chunk_idx}: Prev h norm = {prev_h_norm:.4f}, New h norm = {curr_h_norm:.4f}, Truncated grad norm = {dh_truncated_norm:.4f}")
             return
@@ -353,7 +353,7 @@ class RNNVisualizer:
             f"前段={prev_h_norm:.2f} -> 本段={curr_h_norm:.2f}",
             "[green]完整继承前文笔记，语境不丢！[/green]"
         )
-
+        
         # 反向截断
         table.add_row(
             "[red]逆向算账 (反向)[/red]",
@@ -378,7 +378,7 @@ class RNNVisualizer:
         """
         if show_banner:
             self.print_banner("【探针 5】梯度裁剪 (Gradient Clipping) 保命刹车看板", "观察防范模型暴走崩溃的自动限速机制")
-
+        
         if show_tip:
             self.print_tip(
                 "在训练 RNN 时，偶尔会遇到突发的一阵大风暴（比如某个词算出的改错步子巨大）。\n"
@@ -386,14 +386,14 @@ class RNNVisualizer:
                 "【梯度裁剪】就像电闸上的空气保险丝：只要改错总步长超标，就一律按比例缩减到安全上限之内！",
                 tip_key="probe5_gradient_clipping"
             )
-
+        
         if not HAS_RICH:
             print(f"Orig norm: {orig_norm:.4f}, Max norm: {max_norm:.4f}, Scale: {scale_rate:.4f}, Final norm: {final_norm:.4f}")
             return
 
         is_clipped = orig_norm > max_norm
         status_text = "[bold red][CLIP] 触发自动刹车！已等比缩减[/bold red]" if is_clipped else "[bold green][OK] 处于安全速度内 (平稳通过)[/bold green]"
-
+        
         table = Table(title="自动限速保命对比表", show_header=True, header_style="bold yellow", border_style="dim")
         table.add_column("物理指标", style="bold cyan", width=16, overflow="fold")
         table.add_column("大白话含义", style="dim cyan", width=14, overflow="fold")
@@ -423,7 +423,7 @@ class RNNVisualizer:
         """
         if show_banner:
             self.print_banner(f"【探针 6】语言模型单步文字接龙看板 (第 #{step_idx} 步演练)", "透视模型脑海里给出的下一字概率排行榜")
-
+        
         if show_tip:
             self.print_tip(
                 "语言模型的核心任务只有一件事：【文字接龙】！\n"
@@ -433,7 +433,7 @@ class RNNVisualizer:
                 "  - PPL = 1.05：说明模型心里几乎百分之百肯定下一个字就是它，毫不纠结（学成了）！",
                 tip_key="probe6_lm_step"
             )
-
+        
         if not HAS_RICH:
             print(f"Input: '{input_token}' -> Target: '{target_token}', Loss: {loss:.4f}, PPL: {ppl:.2f}")
             print(f"Top candidates: {top_candidates}")
@@ -456,9 +456,9 @@ class RNNVisualizer:
             if cand == target_token:
                 is_hit = True
             table.add_row(f"#{rank}", f"'{cand}'", bar, match)
-
+            
         self.console.print(table)
-
+        
         info_text = Text()
         info_text.append(f"• 单步猜错惩罚 (交叉熵损失 Loss): {loss:.4f}\n", style="bold yellow")
         info_text.append(f"• 模型迷茫指数 (困惑度 PPL = exp(Loss)): {ppl:.2f} (相当于在 {max(1, int(round(ppl)))} 个字里掷骰子猜测)\n", style="bold magenta")
@@ -580,7 +580,7 @@ class RNNVisualizer:
         """
         if show_banner:
             self.print_banner(f"【探针 7】Gated RNN 门控透视 (时钟周期 t={step_idx})", "透视重置门、更新门与梯度直连无损高速公路")
-
+        
         if show_tip:
             self.print_tip(
                 "为什么门控循环网络 (如 GRU/LSTM) 能彻底终结梯度消失？\n"
@@ -591,7 +591,7 @@ class RNNVisualizer:
                 "  完全绕过了传统的权重矩阵连乘！即使回传 100 步，梯度依然毫发无损！",
                 tip_key="probe7_gated_rnn"
             )
-
+        
         if not HAS_RICH:
             print(f"Step {step_idx}: Reset gate = {reset_gate:.2%}, Update gate = {update_gate:.2%}, Highway = {highway_flow:.2%}, Retention = {retention_gain:.4f}")
             return

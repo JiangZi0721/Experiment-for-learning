@@ -17,9 +17,9 @@ class RNNLM:
     支持两种循环骨架:
       - "vanilla": 基础单步循环神经网络 (Vanilla RNN)
       - "gru":     门控循环神经网络 (Gated Recurrent Unit, GRU)
-
+    
     架构链路:
-        xs (N, T)
+        xs (N, T) 
           │
           ▼ [TimeEmbedding]
         (N, T, D)
@@ -44,16 +44,16 @@ class RNNLM:
     ):
         if seed is not None:
             np.random.seed(seed)
-
+            
         V, D, H = vocab_size, wordvec_size, hidden_size
         self.vocab_size = V
         self.wordvec_size = D
         self.hidden_size = H
         self.rnn_type = rnn_type.lower()
-
+        
         # 1. 初始化权重与偏置
         embed_W = (np.random.randn(V, D) * init_std).astype(np.float32)
-
+        
         if self.rnn_type == "gru":
             # 门控循环网络: 3 倍隐藏维度 [reset_gate, update_gate, candidate]
             rnn_Wx = (np.random.randn(D, 3 * H) / np.sqrt(D)).astype(np.float32)
@@ -66,10 +66,10 @@ class RNNLM:
             rnn_Wh = (np.random.randn(H, H) / np.sqrt(H)).astype(np.float32)
             rnn_b = np.zeros(H, dtype=np.float32)
             rnn_layer = TimeRNN(rnn_Wx, rnn_Wh, rnn_b, stateful=True)
-
+            
         affine_W = (np.random.randn(H, V) / np.sqrt(H)).astype(np.float32)
         affine_b = np.zeros(V, dtype=np.float32)
-
+        
         # 2. 组装网络层 (注意: 默认开启 stateful=True 以支持截断跨块状态延续)
         self.layers = [
             TimeEmbedding(embed_W),
@@ -78,13 +78,40 @@ class RNNLM:
         ]
         self.loss_layer = TimeSoftmaxWithLoss()
         self.rnn_layer = self.layers[1]
-
+        
         # 3. 集中管理所有可训练参数与梯度指针
         self.params: List[np.ndarray] = []
         self.grads: List[np.ndarray] = []
         for layer in self.layers:
             self.params += layer.params
             self.grads += layer.grads
+
+    def save_weights(self, file_path: str):
+        """保存模型所有权重参数到 .npz 文件 (深度学习模型产出的核心权重)"""
+        weights_dict = {f"param_{i}": p for i, p in enumerate(self.params)}
+        np.savez(file_path, **weights_dict)
+
+    def load_weights(self, file_path: str):
+        """从 .npz 文件加载预训练模型权重"""
+        data = np.load(file_path)
+        for i, p in enumerate(self.params):
+            key = f"param_{i}"
+            if key in data:
+                p[...] = data[key]
+
+    def summary(self) -> Dict[str, Any]:
+        """统计模型各层参数量与内存占用 (揭秘大模型权重物理本质)"""
+        total_params = sum(p.size for p in self.params)
+        param_bytes = sum(p.nbytes for p in self.params)
+        return {
+            "total_params": total_params,
+            "param_bytes": param_bytes,
+            "param_kb": param_bytes / 1024.0,
+            "layers": [
+                {"shape": p.shape, "size": p.size, "dtype": str(p.dtype)}
+                for p in self.params
+            ]
+        }
 
     def reset_state(self):
         """重置 RNN 时序隐藏状态 (在序列开头或不同文档间重置)"""
@@ -101,7 +128,7 @@ class RNNLM:
     def forward(self, xs: np.ndarray, ts: np.ndarray) -> float:
         """
         前向计算完整图: 输入序列 -> 逐层传递 -> 计算时序交叉熵损失
-
+        
         参数:
             xs: 输入 Token 矩阵, shape=(N, T)
             ts: 目标 Token 矩阵, shape=(N, T) (通常为 xs 向右偏移 1 个位置的下一个词)
@@ -126,7 +153,7 @@ class RNNLM:
     def predict_next_token_logits(self, x_token: int, h_prev: Optional[np.ndarray] = None) -> Tuple[np.ndarray, np.ndarray]:
         """
         单步预测下一个 Token 的未归一化对数概率 Logits 与更新后的隐藏状态
-
+        
         参数:
             x_token: 单个词/字符的索引 (int)
             h_prev: 上一步的隐藏状态 (1, H), 若为 None 则使用内部状态或全 0
@@ -139,11 +166,11 @@ class RNNLM:
                 h_prev = self.rnn_layer.h[:1]
             else:
                 h_prev = np.zeros((N, self.hidden_size), dtype=np.float32)
-
+                
         # 1. 词嵌入
         embed_W = self.layers[0].params[0]
         x_vec = embed_W[x_token:x_token+1]   # (1, D)
-
+        
         # 2. 单步循环前向 (支持 Vanilla RNN 与 Gated GRU)
         Wx, Wh, b = self.rnn_layer.params
         if self.rnn_type == "gru":
@@ -152,7 +179,7 @@ class RNNLM:
         else:
             a = np.dot(x_vec, Wx) + np.dot(h_prev, Wh) + b
             h_new = np.tanh(a)                   # (1, H)
-
+        
         # 3. 投影到词表未归一化 Logits
         affine_W, affine_b = self.layers[2].params
         logits = np.dot(h_new, affine_W) + affine_b # (1, V)
@@ -161,7 +188,7 @@ class RNNLM:
     def predict_next_token_probs(self, x_token: int, h_prev: Optional[np.ndarray] = None) -> Tuple[np.ndarray, np.ndarray]:
         """
         单步预测下一个 Token 的概率分布 (用于自回归生成或交互探针)
-
+        
         参数:
             x_token: 单个词/字符的索引 (int)
             h_prev: 上一步的隐藏状态 (1, H), 若为 None 则使用内部状态或全 0
@@ -192,7 +219,7 @@ class RNNLM:
         - 温度调节 (Temperature): 控制采样概率平滑度 (<=0 为贪心解码，0.7 适中自然)
         - Top-K 截断采样: 保留概率最高的前 K 个候选
         - Top-P (Nucleus 核采样): 保留累积概率质量达到 P 的动态候选核
-
+        
         参数:
             start_tokens: 提示引导词序列 (Prompt IDs)
             max_length: 生成最大长度
@@ -206,20 +233,20 @@ class RNNLM:
             raise ValueError("start_tokens 不能为空！")
 
         generated = list(start_tokens)
-        h = None
-
-        # 1. 预热隐藏状态：将 Prompt 中前 N-1 个词依次喂入网络接力
-        if len(start_tokens) > 1:
-            for token in start_tokens[:-1]:
-                _, h = self.predict_next_token_probs(token, h)
-
-        cur_token = start_tokens[-1]
-
-        # 2. 逐步自回归生成后续 Token
+        
+        # 1. 显式零初始化隐藏状态，彻底杜绝训练或前序批次残留状态污染
+        h = np.zeros((1, self.hidden_size), dtype=np.float32)
+        
+        # 2. 严格按时序将 Prompt 每一个 Token 依次喂入网络推进
+        # 在处理完 Prompt 最后一个 Token 时，logits 即为首个续写词的预测分布
+        logits = None
+        for token in start_tokens:
+            logits, h = self.predict_next_token_logits(token, h)
+            
+        # 3. 逐步自回归生成后续 Token
         for _ in range(max_length):
-            logits, h = self.predict_next_token_logits(cur_token, h)
             logits = logits.copy()
-
+            
             # (A) 重复惩罚 (Repetition Penalty, CTRL 算法)
             if repetition_penalty != 1.0:
                 recent_context = set(generated[-repetition_window:] if repetition_window > 0 else generated)
@@ -228,20 +255,20 @@ class RNNLM:
                         logits[tok_id] /= repetition_penalty
                     else:
                         logits[tok_id] *= repetition_penalty
-
+                        
             # (B) 贪心解码 (若 temperature <= 1e-4)
             if temperature <= 1e-4:
                 next_token = int(np.argmax(logits))
                 generated.append(next_token)
-                cur_token = next_token
+                logits, h = self.predict_next_token_logits(next_token, h)
                 continue
-
+                
             # (C) 温度调节
             logits = logits / max(temperature, 1e-4)
             logits_shifted = logits - np.max(logits)
             exp_logits = np.exp(logits_shifted)
             probs = exp_logits / np.sum(exp_logits)
-
+            
             # (D) Top-K 截断过滤
             if 0 < top_k < len(probs):
                 indices_to_remove = np.argsort(probs)[:-top_k]
@@ -251,16 +278,16 @@ class RNNLM:
                     probs = probs / prob_sum
                 else:
                     probs = np.ones_like(probs) / len(probs)
-
+                    
             # (E) Top-P (Nucleus) 核采样
             if 0.0 < top_p < 1.0:
                 sorted_indices = np.argsort(probs)[::-1]
                 sorted_probs = probs[sorted_indices]
                 cum_probs = np.cumsum(sorted_probs)
-
+                
                 cutoff = np.searchsorted(cum_probs, top_p)
                 valid_indices = sorted_indices[:cutoff + 1]
-
+                
                 new_probs = np.zeros_like(probs)
                 new_probs[valid_indices] = probs[valid_indices]
                 prob_sum = np.sum(new_probs)
@@ -268,10 +295,10 @@ class RNNLM:
                     probs = new_probs / prob_sum
                 else:
                     probs = np.ones_like(probs) / len(probs)
-
+                    
             # (F) 依概率采样
             next_token = int(np.random.choice(len(probs), p=probs))
             generated.append(next_token)
-            cur_token = next_token
-
+            logits, h = self.predict_next_token_logits(next_token, h)
+            
         return generated

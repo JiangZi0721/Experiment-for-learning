@@ -29,7 +29,7 @@ from src.visualizer import RNNVisualizer
 def load_corpus(file_path: Path):
     with open(file_path, "r", encoding="utf-8") as f:
         text = f.read()
-
+        
     chars = sorted(list(set(text)))
     char_to_id = {c: i for i, c in enumerate(chars)}
     id_to_char = {i: c for i, c in enumerate(chars)}
@@ -47,7 +47,7 @@ def run_experiment(max_epoch: int = 40, batch_size: int = 4, time_size: int = 20
     corpus_path = Path(__file__).resolve().parent.parent / "data" / "corpus.txt"
     raw_text, corpus, char_to_id, id_to_char = load_corpus(corpus_path)
     vocab_size = len(char_to_id)
-
+    
     visualizer.print_tip(
         f"语料总字符数: {len(corpus)} 字 | 独立词表大小 (Vocab Size): {vocab_size} 字符\n"
         "因果语言模型 (Causal LM) 的训练法则：\n"
@@ -74,10 +74,10 @@ def run_experiment(max_epoch: int = 40, batch_size: int = 4, time_size: int = 20
     print("═" * 70)
     prompt_str = "循环神经网络"
     prompt_ids = [char_to_id[c] for c in prompt_str if c in char_to_id]
-
+    
     raw_gen_ids = model.generate(prompt_ids, max_length=25, temperature=1.0)
     raw_gen_text = "".join([id_to_char[i] for i in raw_gen_ids[len(prompt_ids):]])
-
+    
     visualizer.show_lm_generation_panel(
         case_idx=0,
         prompt=prompt_str,
@@ -91,21 +91,21 @@ def run_experiment(max_epoch: int = 40, batch_size: int = 4, time_size: int = 20
     print("\n" + "═" * 70)
     print(f">>> [阶段 2: 启动 Truncated BPTT 训练 (Epochs={max_epoch}, Batch={batch_size}, T={time_size})]")
     print("═" * 70)
-
+    
     milestone_targets = [1, 25, 60, 120, 180]
     milestone_records = []
     first_step_probe = None
     final_step_probe = None
     current_step = 0
-
+    
     def on_step_callback(probe_data: dict):
         nonlocal current_step, first_step_probe, final_step_probe
         current_step += 1
-
+        
         loss_probe = probe_data.get("loss_probe", {})
         probs = loss_probe.get("sample_probs", None)
         target_id = loss_probe.get("sample_target", 0)
-
+        
         # 记录第 1 步 probe (训练前初始状态)
         if current_step == 1 and probs is not None:
             first_step_probe = {
@@ -116,7 +116,7 @@ def run_experiment(max_epoch: int = 40, batch_size: int = 4, time_size: int = 20
                 "loss": probe_data["loss"],
                 "ppl": probe_data["ppl"]
             }
-
+            
         # 记录关键里程碑
         if current_step in milestone_targets:
             in_token_id = model.current_xs[0, 0] if hasattr(model, "current_xs") else 0
@@ -125,7 +125,7 @@ def run_experiment(max_epoch: int = 40, batch_size: int = 4, time_size: int = 20
             top_idx = int(np.argmax(probs)) if probs is not None else 0
             top_char = id_to_char.get(top_idx, "?")
             top_prob = float(probs[top_idx]) if probs is not None else 0.0
-
+            
             # 状态评价
             loss_val = probe_data["loss"]
             if loss_val > 4.5:
@@ -136,7 +136,7 @@ def run_experiment(max_epoch: int = 40, batch_size: int = 4, time_size: int = 20
                 eval_comment = "掌握专业短语词汇模式"
             else:
                 eval_comment = "记忆长程因果，几乎100%命中"
-
+                
             milestone_records.append({
                 "step": current_step,
                 "epoch": probe_data["epoch"],
@@ -213,7 +213,7 @@ def run_experiment(max_epoch: int = 40, batch_size: int = 4, time_size: int = 20
     print("\n" + "═" * 70)
     print(">>> [阶段 3: 自回归文本生成实测与'神经文本退化 (复读机陷阱)'解构]")
     print("═" * 70)
-
+    
     visualizer.print_tip(
         "为什么未经调优的自回归模型极易陷入【复读机死循环】？\n"
         "• 现象：模型反复输出'自回归语言模型。自回归语言模型。自回归语言模型...'\n"
@@ -234,7 +234,7 @@ def run_experiment(max_epoch: int = 40, batch_size: int = 4, time_size: int = 20
         repetition_penalty=1.0
     )
     trap_gen_text = "".join([id_to_char[i] for i in trap_gen_ids[len(p_trap_ids):]])
-
+    
     visualizer.show_lm_generation_panel(
         case_idx=1,
         prompt=p_trap,
@@ -254,7 +254,7 @@ def run_experiment(max_epoch: int = 40, batch_size: int = 4, time_size: int = 20
         repetition_window=50
     )
     fixed_gen_text = "".join([id_to_char[i] for i in fixed_gen_ids[len(p_trap_ids):]])
-
+    
     visualizer.show_lm_generation_panel(
         case_idx=2,
         prompt=p_trap,
@@ -276,7 +276,7 @@ def run_experiment(max_epoch: int = 40, batch_size: int = 4, time_size: int = 20
         repetition_window=50
     )
     gen3_text = "".join([id_to_char[i] for i in gen3_ids[len(p3_ids):]])
-
+    
     visualizer.show_lm_generation_panel(
         case_idx=3,
         prompt=p3,
@@ -298,7 +298,7 @@ def run_experiment(max_epoch: int = 40, batch_size: int = 4, time_size: int = 20
         repetition_window=50
     )
     gen4_text = "".join([id_to_char[i] for i in gen4_ids[len(p4_ids):]])
-
+    
     visualizer.show_lm_generation_panel(
         case_idx=4,
         prompt=p4,

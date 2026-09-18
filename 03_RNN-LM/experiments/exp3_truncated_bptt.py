@@ -33,12 +33,12 @@ def run_experiment():
     np.random.seed(42)
     N, T, D, H = 1, 10, 8, 16
     num_chunks = 4 # 总共 4 个 Chunk，总时序跨度 40 步
-
+    
     # 构造权重
     Wx = (np.random.randn(D, H) / np.sqrt(D)).astype(np.float32)
     Wh = (np.random.randn(H, H) / np.sqrt(H)).astype(np.float32)
     b = np.zeros(H, dtype=np.float32)
-
+    
     # 构造跨时序长程数据:
     # 在 Chunk 0 的第 0 步注入一个极强的特殊模式信号 (Trigger)
     chunks_data = [np.random.randn(N, T, D).astype(np.float32) * 0.1 for _ in range(num_chunks)]
@@ -48,7 +48,7 @@ def run_experiment():
     # ---------------- 模式 A: stateful=False (无状态截断，记忆断连) ----------------
     print("\n>>> [模式 A: stateful=False (每个 Chunk 重置 h=0，记忆断层)]")
     rnn_stateless = TimeRNN(Wx.copy(), Wh.copy(), b.copy(), stateful=False)
-
+    
     stateless_final_states = []
     for c_idx, chunk_x in enumerate(chunks_data):
         hs = rnn_stateless.forward(chunk_x)
@@ -58,21 +58,21 @@ def run_experiment():
     # ---------------- 模式 B: stateful=True (标准 Truncated BPTT 接力) ----------------
     print("\n>>> [模式 B: stateful=True (前向状态无缝接力，跨块记忆永存)]")
     rnn_stateful = TimeRNN(Wx.copy(), Wh.copy(), b.copy(), stateful=True)
-
+    
     stateful_final_states = []
     for c_idx, chunk_x in enumerate(chunks_data):
         prev_h = rnn_stateful.get_state() if hasattr(rnn_stateful, "get_state") else rnn_stateful.h
         prev_norm = float(np.linalg.norm(prev_h)) if prev_h is not None else 0.0
-
+        
         hs = rnn_stateful.forward(chunk_x)
         curr_norm = float(np.linalg.norm(hs[:, -1, :]))
         stateful_final_states.append(hs[:, -1, :].copy())
-
+        
         # 模拟反向传播并在边界截断
         dhs = np.ones_like(hs) * 0.1
         dxs, dh_prev = rnn_stateful.backward(dhs)
         dh_trunc_norm = float(np.linalg.norm(dh_prev))
-
+        
         # 展示探针看板 (仅首个分块打印导读与横幅，后续分块纯净输出数据)
         visualizer.show_truncated_bptt_relay(
             chunk_idx=c_idx,
@@ -90,7 +90,7 @@ def run_experiment():
     state_a = stateless_final_states[-1].reshape(-1)
     state_b = stateful_final_states[-1].reshape(-1)
     norm_diff = np.linalg.norm(state_b - state_a)
-
+    
     print(f"• 模式 A (无接力) Chunk #3 终态模长: {float(np.linalg.norm(state_a)):.4f} (历史信号已彻底消亡，只剩局部噪声)")
     print(f"• 模式 B (截断接力) Chunk #3 终态模长: {float(np.linalg.norm(state_b)):.4f} (早期线索经由 h 持续接力，仍被深刻激活)")
     print(f"• 终态特征欧氏差异度: {float(norm_diff):.4f}")

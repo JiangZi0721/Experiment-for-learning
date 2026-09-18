@@ -65,7 +65,7 @@ def run_experiment():
     # 初始化 Wh 为较大值 (尺度 2.0)
     Wh_large = (np.random.randn(H, H) * 0.45).astype(np.float32)
     Wx_large = (np.random.randn(D, H) * 0.1).astype(np.float32)
-
+    
     eigenvals_large = np.linalg.eigvals(Wh_large)
     spectral_radius_large = float(np.max(np.abs(eigenvals_large)))
     print(f"[*] 循环权重 Wh 特征值谱半径 (Spectral Radius): {spectral_radius_large:.4f} (> 1.0)")

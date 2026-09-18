@@ -33,6 +33,7 @@ ENV/
 *.bin
 *.safetensors
 *.pt
+*.npz
 *.tar.gz
 *.zip
 02_whitebox_rag_system/models/
@@ -53,3 +54,4 @@ checkpoints/
 *.wav
 *.avi
 *.mov
+*.pdf

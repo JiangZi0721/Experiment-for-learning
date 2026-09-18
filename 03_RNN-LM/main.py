@@ -36,6 +36,7 @@ from experiments.exp2_gradient_vanishing import run_experiment as run_exp2
 from experiments.exp3_truncated_bptt import run_experiment as run_exp3
 from experiments.exp4_train_rnnlm import run_experiment as run_exp4
 from experiments.exp5_gated_rnn_duel import run_experiment as run_exp5
+from experiments.exp6_long_text_evolution import run_experiment as run_exp6
 from src.glossary import print_glossary
 
 
@@ -107,8 +108,9 @@ def interactive_menu():
             table.add_row("3", "Truncated BPTT 跨段接力 (Relay)", "马拉松接力：记忆小本子一路传，犯错倒查不连累前人")
             table.add_row("4", "端到端 RNNLM 训练与生成 (LM)", "文字接龙演练：看选择困难症指数 (PPL) 怎样极速暴降")
             table.add_row("5", "Gated RNN 门控对决实验 (Duel)", "重置门与更新门：实测梯度高速公路直连无损穿透 30 步")
-            table.add_row("6", "全网络数学梯度校验 (Grad Check)", "中心差分法验证手推导数，达到 10^-11 双精度极限")
-            table.add_row("7", "全自动全景教学大巡礼 (Full Tour)", "依次执行全部 6 大实验，建立清晰完整的物理心智模型")
+            table.add_row("6", "长文本生成演化透视 (Long Text LM)", "见证 PPL 从 287 暴降到 1.04，长文本四阶蜕变实测")
+            table.add_row("7", "全网络数学梯度校验 (Grad Check)", "中心差分法验证手推导数，达到 10^-11 双精度极限")
+            table.add_row("8", "全自动全景教学大巡礼 (Full Tour)", "依次执行全部核心实验，建立清晰完整的物理心智模型")
             table.add_row("g", "📖 专有名词'人话'对照宝典 (Glossary)", "生活化比喻速查字典：扫清所有学术黑话障碍")
             table.add_row("0", "退出系统 (Exit)", "结束本次透视之旅")
             console.print(table)
@@ -118,12 +120,13 @@ def interactive_menu():
             print("[3] Truncated BPTT 跨段接力")
             print("[4] 端到端 RNNLM 训练与生成")
             print("[5] Gated RNN 门控对决实验")
-            print("[6] 全网络数学梯度校验")
-            print("[7] 全自动全景教学大巡礼")
+            print("[6] 长文本生成演化透视")
+            print("[7] 全网络数学梯度校验")
+            print("[8] 全自动全景教学大巡礼")
             print("[g] 专有名词'人话'对照宝典")
             print("[0] 退出系统")
 
-        choice = input("\n请输入选项编号 [0-7 或 g]: ").strip().lower()
+        choice = input("\n请输入选项编号 [0-8 或 g]: ").strip().lower()
         if choice == "1":
             run_exp1()
         elif choice == "2":
@@ -135,8 +138,10 @@ def interactive_menu():
         elif choice == "5":
             run_exp5()
         elif choice == "6":
-            run_grad_check()
+            run_exp6(interactive=True)
         elif choice == "7":
+            run_grad_check()
+        elif choice == "8":
             run_full_tour()
         elif choice == "g":
             print_glossary()
@@ -152,7 +157,7 @@ def main():
     parser.add_argument("--tour", action="store_true", help="全自动执行完整全景教学巡礼")
     parser.add_argument("--grad-check", action="store_true", help="执行纯白盒计算图梯度校验")
     parser.add_argument("--glossary", action="store_true", help="查看专有名词初学者'人话'宝典")
-    parser.add_argument("--exp", type=int, choices=[1, 2, 3, 4], help="执行指定编号实验 (1-4)")
+    parser.add_argument("--exp", type=int, choices=[1, 2, 3, 4, 5, 6], help="执行指定编号实验 (1-6)")
     args = parser.parse_args()
 
     if args.tour:
@@ -170,6 +175,10 @@ def main():
         run_exp3()
     elif args.exp == 4:
         run_exp4()
+    elif args.exp == 5:
+        run_exp5()
+    elif args.exp == 6:
+        run_exp6()
     else:
         interactive_menu()
 

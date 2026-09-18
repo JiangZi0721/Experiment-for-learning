@@ -44,7 +44,7 @@ def run_experiment():
     np.random.seed(42)
     N, T, D, H = 1, 30, 8, 16
     xs = np.random.randn(N, T, D).astype(np.float32) * 0.5
-
+    
     # 在最末端 t=29 注入基准改错信号
     dhs = np.zeros((N, T, H), dtype=np.float32)
     dhs[:, -1, :] = 1.0
@@ -53,7 +53,7 @@ def run_experiment():
     Wx_vanilla = (np.random.randn(D, H) / np.sqrt(D)).astype(np.float32)
     Wh_vanilla = (np.random.randn(H, H) / np.sqrt(H)).astype(np.float32)
     b_vanilla = np.zeros(H, dtype=np.float32)
-
+    
     time_vanilla = TimeRNN(Wx_vanilla, Wh_vanilla, b_vanilla)
     time_vanilla.forward(xs)
     time_vanilla.backward(dhs)
@@ -65,7 +65,7 @@ def run_experiment():
     b_gru = np.zeros(3 * H, dtype=np.float32)
     # 将更新门 z 的偏置设为 -1.5 (使 Sigmoid(z) ~ 0.18, 直连通道 1 - z ~ 0.82 畅通无阻)
     b_gru[H:2*H] = -1.5
-
+    
     time_gru = TimeGRU(Wx_gru, Wh_gru, b_gru)
     time_gru.forward(xs)
     time_gru.backward(dhs)
@@ -85,9 +85,9 @@ def run_experiment():
     # 4. 双路梯度逆流穿透力对比看板
     print("\n" + "="*80)
     print(">>> [核心对决看板: 误差从末尾 t=29 逆向倒流回 t=0 时各节点的信号残留]")
-
+    
     check_steps = [29, 25, 20, 15, 10, 5, 0]
-
+    
     if HAS_RICH:
         table = Table(title="Vanilla RNN vs Gated RNN 30 步长程梯度逆流对决表", show_header=True, header_style="bold magenta")
         table.add_column("时序节点", justify="center", style="bold yellow", width=14, overflow="fold")

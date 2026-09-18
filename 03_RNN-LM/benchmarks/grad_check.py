@@ -40,13 +40,13 @@ def numerical_gradient(f, x: np.ndarray, eps: float = 1e-5) -> np.ndarray:
     while not it.finished:
         idx = it.multi_index
         orig_val = x[idx]
-
+        
         x[idx] = orig_val + eps
         fxh1 = f(x)
-
+        
         x[idx] = orig_val - eps
         fxh2 = f(x)
-
+        
         grad[idx] = (fxh1 - fxh2) / (2 * eps)
         x[idx] = orig_val
         it.iternext()

@@ -30,19 +30,19 @@ def run_experiment():
 
     np.random.seed(42)
     N, D, H = 1, 8, 16
-
+    
     # 初始化标准权重
     Wx = (np.random.randn(D, H) / np.sqrt(D)).astype(np.float32)
     Wh = (np.random.randn(H, H) / np.sqrt(H)).astype(np.float32)
     b = np.zeros(H, dtype=np.float32)
-
+    
     cell = RNNCell(Wx, Wh, b)
 
     # 场景 A: 正常输入信号 (工作在线性活跃响应区)
     print("\n>>> [场景 A: 正常输入信号 - 活跃响应区]")
     x_normal = np.random.randn(N, D).astype(np.float32)
     h_normal = np.random.randn(N, H).astype(np.float32) * 0.5
-
+    
     cell.forward(x_normal, h_normal)
     dh_normal = np.ones((N, H), dtype=np.float32)
     cell.backward(dh_normal)
@@ -59,7 +59,7 @@ def run_experiment():
     cell_saturated = RNNCell(Wx, Wh, b)
     x_large = np.random.randn(N, D).astype(np.float32) * 10.0 # 输入放大 10 倍
     h_large = np.random.randn(N, H).astype(np.float32) * 10.0
-
+    
     cell_saturated.forward(x_large, h_large)
     dh_large = np.ones((N, H), dtype=np.float32)
     cell_saturated.backward(dh_large)

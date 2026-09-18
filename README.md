@@ -7,18 +7,21 @@
 
 ## 🧭 全景实验导航目录 (Experiment Index)
 
-| 编号 | 核心实验项目 | 核心机制与全流程透视重点 | 交付成果与可视化 | 状态 |
+| 编号 | 核心实验项目 | 核心机制与全流程透视重点 | 交付成果、可视化与通关宝典 | 状态 |
 | :---: | :--- | :--- | :--- | :---: |
-| **01** | [`01_word2vec_acceleration/`](./01_word2vec_acceleration) | **词表征与负采样加速**：共现矩阵、PMI、CBOW、Skip-Gram 与 Negative Sampling 高速化 | 词向量 2D/3D 降维流形投影、交互式 HTML、CLI 词类比计算 | `已完成` |
-| **02** | [`02_whitebox_rag_system/`](./02_whitebox_rag_system) | **白盒端到端 RAG 检索生成**：切片策略、BM25 稀疏检索、Dense 稠密语义检索、RRF 倒数秩融合、交叉重排器、生成与评估 | 检索分阶段 Hit@K、MRR、NDCG 评测大盘、BGE 微调前后对比 | `已完成` |
-| **03** | [`03_RNN-LM/`](./03_RNN-LM) | **循环神经网络与自回归语言模型**：NumPy 底层手推 RNNCell、TimeRNN、Gated RNN (GRU)、截断反向传播 (Truncated BPTT)、梯度检验 | 梯度暴冲与裁剪动画、隐状态记忆流动探针、自回归文本生成 | `已完成` |
-| **04** | [`04_PPO-GRPO-DPO/`](./04_PPO-GRPO-DPO) | **大语言模型后训练强化对齐**：PPO (广义优势估计 GAE/Critic)、GRPO (群组相对优势估计免 Critic)、DPO (直接偏好优化隐式奖励) | 奖励建模、KL 散度漂移惩罚、三对齐算法训练动力学曲线 | `已完成` |
-| **05** | [`05_Seq2seq_and_Attention/`](./05_Seq2seq_and_Attention) | **序列建模与注意力机制演进**：Classic Seq2Seq、Reverse 逆序输入、Peeky 解码器直连、Bahdanau 软注意力机制 | 算术加法 Exact Match 评测、英法翻译 Corpus-BLEU 曲线、注意力热力图 | `已完成` |
-| **06** | [`06_whitebox_transformer/`](./06_whitebox_transformer) | **标准 Transformer 架构全景白盒透视**：Scaled Dot-Product、Multi-Head Attention、Sinusoidal PE、Causal Mask 与自回归解码器 | Web 交互式微观透视透镜、微观矩阵数值推演、公式级主动探针 | `已完成` |
-| **07** | [`07_RL_Foundations/`](./07_RL_Foundations) | **强化学习理论基石与算法全景实证**：MDP 动态规划 (策略/价值迭代)、无模型 TD(0)/SARSA/Q-Learning、Robbins-Monro 收敛、DQN 与 Rainbow、分布 vs 样本模型、深度世界模型 MPC | 4×4/5×5 网格极限博弈、剧变时刻单步算术回溯、Gym 摆杆做梦渲染 GIF | `已完成` |
-| **08** | [`08_CRF_Structured_Prediction/`](./08_CRF_Structured_Prediction) | **条件随机场与结构化预测**：线性链 CRF 原生手推、对数空间 Log-Sum-Exp 配分函数 $Z(X)$、维特比 (Viterbi) 动态规划解码、标注偏置 (Label Bias) 破解、NER 序列标注实战 | HMM vs BiLSTM vs BiLSTM-CRF 横向基准、转移矩阵硬约束热力图、0% 非法跳变证明 | `已完成` |
-| **09** | [`09_MoE_Sparse_Routing/`](./09_MoE_Sparse_Routing) | **混合专家模型与稀疏门控路由**：Top-K 门控、Noisy Router、Switch/GShard 辅助负载均衡损失、DeepSeekMoE (细粒度专家 + 隔离共享专家)、DeepSeek-V3 免辅助损失动态偏置 | 路由塌缩垄断 vs 均衡消融对比图、算力对齐架构收敛曲线、领域专家分工热力图 | `已完成` |
-| **10** | [`10_LLM_Foundations_and_Kernels/`](./10_LLM_Foundations_and_Kernels) | **大模型核心算子与系统底座基准**：RoPE 旋转位置编码、KV Cache 压缩演化 (MHA/GQA/MQA/DeepSeek MLA)、FlashAttention 在线分块 Softmax、RMSNorm、LoRA | RoPE 相对位置不变性严格证明、128K 超长文本显存节省 96.5% 建模、FlashAttention 零误差检验 | `已完成` |
+| **01** | [`01_word2vec_acceleration/`](./01_word2vec_acceleration) | **词表征与负采样加速**：共现矩阵、PMI、CBOW、Skip-Gram 与 Negative Sampling 高速化、分布式语义演进全景 | 词向量 2D/3D 流形投影、交互式 HTML、CLI 词类比、[👉手撕面试宝典](./01_word2vec_acceleration/word_embedding_interview_handbook.ipynb) | `已完成` |
+| **02** | [`02_whitebox_rag_system/`](./02_whitebox_rag_system) | **白盒端到端 RAG 检索生成**：切片策略、BM25 稀疏检索、Dense 稠密语义检索、RRF 倒数秩融合、交叉重排器、生成与评估 | 检索分阶段 Hit@K/MRR/NDCG 评测大盘、BGE 微调对比、[👉手撕面试宝典](./02_whitebox_rag_system/rag_interview_handbook.ipynb) | `已完成` |
+| **03** | [`03_RNN-LM/`](./03_RNN-LM) | **循环神经网络与自回归语言模型**：NumPy 底层手推 RNNCell、TimeRNN、Gated RNN (GRU)、Truncated BPTT、逆序训练泛化验证、算术状态机微观追踪 | 梯度暴冲与裁剪动画、隐状态流动探针、自回归文本生成、[👉手撕面试宝典](./03_RNN-LM/rnn_lm_interview_handbook.ipynb) | `已完成` |
+| **04** | [`04_PPO-GRPO-DPO/`](./04_PPO-GRPO-DPO) | **大语言模型后训练强化对齐**：PPO (广义优势估计 GAE/Critic)、GRPO (群组相对优势估计免 Critic)、DPO (直接偏好优化隐式奖励) | 奖励建模、KL 散度漂移惩罚、三对齐算法训练动力学曲线、[👉手撕面试宝典](./04_PPO-GRPO-DPO/rlhf_alignment_interview_handbook.ipynb) | `已完成` |
+| **05** | [`05_Seq2seq_and_Attention/`](./05_Seq2seq_and_Attention) | **序列建模与注意力机制演进**：Classic Seq2Seq、Reverse 逆序输入、Peeky 解码器直连、Bahdanau 软注意力机制 | 算术加法 Exact Match 评测、英法翻译 Corpus-BLEU 曲线、注意力热力图、[👉手撕面试宝典](./05_Seq2seq_and_Attention/seq2seq_interview_handbook.ipynb) | `已完成` |
+| **06** | [`06_whitebox_transformer/`](./06_whitebox_transformer) | **标准 Transformer 架构全景白盒透视**：Scaled Dot-Product、Multi-Head Attention、Sinusoidal PE、Causal Mask 与自回归解码器 | Web 交互式微观透视透镜、微观矩阵数值推演、公式级主动探针、[👉手撕面试宝典](./06_whitebox_transformer/transformer_interview_handbook.ipynb) | `已完成` |
+| **07** | [`07_RL_Foundations/`](./07_RL_Foundations) | **强化学习理论基石与算法全景实证**：MDP 动态规划 (策略/价值迭代)、无模型 TD(0)/SARSA/Q-Learning、Robbins-Monro 收敛、DQN 与 Rainbow、分布 vs 样本模型 | 4×4/5×5 网格极限博弈、剧变时刻单步算术回溯、Gym 摆杆做梦渲染、[👉手撕面试宝典](./07_RL_Foundations/rl_foundations_interview_handbook.ipynb) | `已完成` |
+| **08** | [`08_CRF_Structured_Prediction/`](./08_CRF_Structured_Prediction) | **条件随机场与结构化预测**：线性链 CRF 原生手推、对数空间 Log-Sum-Exp 配分函数 $Z(X)$、维特比 (Viterbi) 动态规划解码、标注偏置 (Label Bias) 破解、NER 序列标注实战 | HMM vs BiLSTM vs BiLSTM-CRF 横向基准、转移矩阵硬约束热力图、0% 非法跳变证明、[👉手撕面试宝典](./08_CRF_Structured_Prediction/crf_interview_handbook.ipynb) | `已完成` |
+| **09** | [`09_MoE_Sparse_Routing/`](./09_MoE_Sparse_Routing) | **混合专家模型与稀疏门控路由**：Top-K 门控、Noisy Router、Switch/GShard 辅助负载均衡损失、DeepSeekMoE (细粒度专家 + 隔离共享专家)、DeepSeek-V3 免辅助损失动态偏置 | 路由塌缩垄断 vs 均衡消融对比图、算力对齐架构收敛曲线、专家分工热力图、[👉手撕面试宝典](./09_MoE_Sparse_Routing/moe_agents_interview_handbook.ipynb) | `已完成` |
+| **10** | [`10_LLM_Foundations_and_Kernels/`](./10_LLM_Foundations_and_Kernels) | **大模型核心算子与系统底座基准**：RoPE 旋转位置编码、KV Cache 压缩演化 (MHA/GQA/MQA/DeepSeek MLA)、FlashAttention 在线分块 Softmax、RMSNorm、LoRA 映射、GPT/BERT/Encoder-Decoder 演化 | RoPE 相对位置不变性严格证明、128K 超长文本显存节省 96.5% 建模、FlashAttention 零误差检验、[👉手撕面试宝典](./10_LLM_Foundations_and_Kernels/llm_interview_handbook.ipynb) | `已完成` |
+| **11** | [`11_Deep_Learning_Foundations/`](./11_Deep_Learning_Foundations) | **深度学习核心基石与表征学习**：矩阵微积分与反向模式自动微分 (VJP)、高维非凸优化景观、梯度流动控制、正则化与归一化几何解耦、自编码器与信息瓶颈理论 | 欠完备自编码器流形投影、PCA 线性等价性白盒证明、非凸优化鞍点动力学分析、[👉核心全景知识库](./11_Deep_Learning_Foundations/Deep_Learning_Foundations_Master.md) | `已完成` |
+| **12** | [`12_Self_Evolving_Agents/`](./12_Self_Evolving_Agents) | **自进化智能体与前沿论文追踪**：自主规划、反射微调、环境反馈驱动的技能进化 (Skill Evolution)、自动化 HuggingFace 前沿论文爬取与精选系统 | 每日顶会前沿论文自动化流水线、系统化智能体进化认知图谱、论文精读提炼报告 | `已完成` |
+
 
 ---
 

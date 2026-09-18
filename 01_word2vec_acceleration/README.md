@@ -4,6 +4,10 @@
 
 本项目是专为深度学习与自然语言处理初学者打造的 **Word2Vec 高速化完整工程实现**。项目完全基于 Python 和 **纯 NumPy** 开发，不依赖任何第三方深度学习框架 (如 PyTorch / TensorFlow)，旨在清晰、透明、严谨地揭示现代自然语言处理词向量技术底层的数学原理与算法细节。
 
+> 💡 **进阶全景资源**：
+> - [👉 Word2Vec / 词向量微观手撕通关宝典 (Jupyter Notebook)](./word_embedding_interview_handbook.ipynb)：包含微观张量流转、负采样代数、矩阵微分与面试必考高频手撕。
+> - [👉 分布式语义表征与负采样演进全景 Master 知识库](./docs/Word_Embedding_Evolution_and_Negative_Sampling_Master.md)：万字白盒解析共现矩阵、SVD 截断、PMI 加权、CBOW/Skip-Gram、层次 Softmax 与 Negative Sampling 核心证明。
+
 ---
 
 ## 目录
