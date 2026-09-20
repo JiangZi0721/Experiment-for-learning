@@ -20,7 +20,6 @@
 | **09** | [`09_MoE_Sparse_Routing/`](./09_MoE_Sparse_Routing) | **混合专家模型与稀疏门控路由**：Top-K 门控、Noisy Router、Switch/GShard 辅助负载均衡损失、DeepSeekMoE (细粒度专家 + 隔离共享专家)、DeepSeek-V3 免辅助损失动态偏置 | 路由塌缩垄断 vs 均衡消融对比图、算力对齐架构收敛曲线、专家分工热力图、[👉手撕面试宝典](./09_MoE_Sparse_Routing/moe_agents_interview_handbook.ipynb) | `已完成` |
 | **10** | [`10_LLM_Foundations_and_Kernels/`](./10_LLM_Foundations_and_Kernels) | **大模型核心算子与系统底座基准**：RoPE 旋转位置编码、KV Cache 压缩演化 (MHA/GQA/MQA/DeepSeek MLA)、FlashAttention 在线分块 Softmax、RMSNorm、LoRA 映射、GPT/BERT/Encoder-Decoder 演化 | RoPE 相对位置不变性严格证明、128K 超长文本显存节省 96.5% 建模、FlashAttention 零误差检验、[👉手撕面试宝典](./10_LLM_Foundations_and_Kernels/llm_interview_handbook.ipynb) | `已完成` |
 | **11** | [`11_Deep_Learning_Foundations/`](./11_Deep_Learning_Foundations) | **深度学习核心基石与表征学习**：矩阵微积分与反向模式自动微分 (VJP)、高维非凸优化景观、梯度流动控制、正则化与归一化几何解耦、自编码器与信息瓶颈理论 | 欠完备自编码器流形投影、PCA 线性等价性白盒证明、非凸优化鞍点动力学分析、[👉核心全景知识库](./11_Deep_Learning_Foundations/Deep_Learning_Foundations_Master.md) | `已完成` |
-| **12** | [`12_Self_Evolving_Agents/`](./12_Self_Evolving_Agents) | **自进化智能体与前沿论文追踪**：自主规划、反射微调、环境反馈驱动的技能进化 (Skill Evolution)、自动化 HuggingFace 前沿论文爬取与精选系统 | 每日顶会前沿论文自动化流水线、系统化智能体进化认知图谱、论文精读提炼报告 | `已完成` |
 
 
 ---
